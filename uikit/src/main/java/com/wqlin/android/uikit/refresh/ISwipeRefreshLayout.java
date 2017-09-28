@@ -198,6 +198,8 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
         isAniming = false;
         if (isNestedScrolling) {
             isNestedAfreshTotalUnconsumed = true;
+        } else {
+            isNestedAfreshTotalUnconsumed = false;
         }
 
         if (mRefreshing) {
@@ -669,7 +671,7 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
         }
         if (isNestedAfreshTotalUnconsumed) {
             isNestedAfreshTotalUnconsumed = false;
-            mTotalUnconsumed=mRefreshView.getTranslationY();
+            mTotalUnconsumed=mRefreshView.getTranslationY()/DRAG_RATE;
             consumed[1] = dy;
             return;
         }
@@ -746,7 +748,7 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
         }
         if (isNestedAfreshTotalUnconsumed) {
             isNestedAfreshTotalUnconsumed = false;
-            mTotalUnconsumed=mRefreshView.getTranslationY();
+            mTotalUnconsumed=mRefreshView.getTranslationY()/DRAG_RATE;
             return;
         }
         // Dispatch up to the nested parent first
