@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wqlin.android.sample">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity android:name="com.wqlin.android.sample.HomeActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.wqlin.android.sample.refresh.TestRefreshViewActivity"
+            android:label="refresh/TestRefreshViewActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.wqlin.android.sample.cagegory" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.wqlin.android.sample.tablayout.SlidingTabActivity"
+            android:label="tablayout/SlidingTabActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.wqlin.android.sample.cagegory" />
+            </intent-filter>
+        </activity>
+
+
+        <activity android:name="com.wqlin.android.sample.common.SimpleFragmentActivity"
+            android:label="common/simpleFragmentActivity"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+        </activity>
+
+        <!--animation-->
+        <activity android:name="com.wqlin.android.sample.animation.TestAnimationActivity"
+            android:label="animation/TestAnimationActivity"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.wqlin.android.sample.cagegory" />
+            </intent-filter>
+
+        </activity>
+
+        <!--animation-->
+
+
+        <!--<activity android:name=".refresh.TestRefreshViewActivity"/>-->
+    </application>
+
+</manifest>
