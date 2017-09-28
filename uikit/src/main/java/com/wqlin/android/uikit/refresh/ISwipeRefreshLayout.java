@@ -198,9 +198,8 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
         isAniming = false;
         if (isNestedScrolling) {
             isNestedAfreshTotalUnconsumed = true;
-        } else {
-            isNestedAfreshTotalUnconsumed = false;
         }
+
         if (mRefreshing) {
             if (isRefreshComplete) {
                 animateOffsetToStartPosition(mRefreshListener);
@@ -245,6 +244,11 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
         }
     }
 
+    /**
+     * 是否刷新 推荐使用setRefreshEnabled()
+     * @param enabled
+     */
+    @Deprecated
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
@@ -259,6 +263,9 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
      */
     public void setRefreshEnabled(boolean enabled) {
         this.mRefreshEnabled = enabled;
+        if (enabled) {
+            setEnabled(true);
+        }
         if (!enabled) {
             reset();
         }
@@ -664,6 +671,7 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
             isNestedAfreshTotalUnconsumed = false;
             mTotalUnconsumed=mRefreshView.getTranslationY();
             consumed[1] = dy;
+            return;
         }
 
         if (dy > 0 && mTotalUnconsumed >= 0) {

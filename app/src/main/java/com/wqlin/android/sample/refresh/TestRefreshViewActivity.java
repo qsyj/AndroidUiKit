@@ -47,7 +47,7 @@ public class TestRefreshViewActivity extends Activity {
 //
         refreshLayout.setRefreshHeaderView(new MedlinkerRefreshHeaderView(this));
 //        refreshLayout.setEnabled(false);
-        refreshLayout.setRefreshEnabled(false);
+        refreshLayout.setRefreshEnabled(true);
         handler.sendEmptyMessageDelayed(0, 2000);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
