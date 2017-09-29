@@ -677,16 +677,15 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
         }
 
         if (dy > 0 && mTotalUnconsumed >= 0) {
-            if (dy > mTotalUnconsumed) {
-                if (mTotalUnconsumed == 0) {
-                    float translationY = mRefreshView.getTranslationY();
-                    if ( translationY> 0) {
-                        mTotalUnconsumed =translationY/DRAG_RATE-dy;
-                    }
-                } else {
-                    consumed[1] = dy - (int) mTotalUnconsumed;
-                    mTotalUnconsumed = 0;
+            if (mTotalUnconsumed == 0) {
+                float translationY = mRefreshView.getTranslationY();
+                if ( translationY> 0) {
+                    mTotalUnconsumed =translationY/DRAG_RATE-dy;
                 }
+            }
+            if (dy > mTotalUnconsumed) {
+                consumed[1] = dy - (int) (mTotalUnconsumed*DRAG_RATE);
+                mTotalUnconsumed = 0;
             } else {
                 mTotalUnconsumed -= dy;
                 consumed[1] = dy;
@@ -1068,6 +1067,7 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
     private void translateContentViews(float transY) {
         if(mRefreshView != null){
             mRefreshView.bringToFront();
+            getRefreshTrigger().onTransYChange(transY);
             ViewCompat.setTranslationY(mRefreshView, transY);
         }
 

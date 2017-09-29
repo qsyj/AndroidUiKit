@@ -35,7 +35,7 @@ import android.widget.ImageView;
  * called before the animation is actually complete and support shadows on older
  * platforms.
  */
-class CircleImageView extends ImageView {
+public class CircleImageView extends ImageView {
 
     private static final int KEY_SHADOW_COLOR = 0x1E000000;
     private static final int FILL_SHADOW_COLOR = 0x3D000000;
@@ -48,7 +48,7 @@ class CircleImageView extends ImageView {
     private Animation.AnimationListener mListener;
     int mShadowRadius;
 
-    CircleImageView(Context context, int color) {
+    public CircleImageView(Context context, int color) {
         super(context);
         final float density = getContext().getResources().getDisplayMetrics().density;
         final int shadowYOffset = (int) (density * Y_OFFSET);

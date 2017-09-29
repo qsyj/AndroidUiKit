@@ -106,6 +106,11 @@ public class ClassicIRefreshHeaderView extends FrameLayout implements IRefreshTr
     }
 
     @Override
+    public void onTransYChange(float tranY) {
+
+    }
+
+    @Override
     public void init() {
         rotated = false;
         ivSuccess.setVisibility(GONE);

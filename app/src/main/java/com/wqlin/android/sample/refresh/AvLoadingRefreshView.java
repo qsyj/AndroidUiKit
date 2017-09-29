@@ -58,6 +58,11 @@ public class AvLoadingRefreshView extends AVLoadingIndicatorView implements IRef
     }
 
     @Override
+    public void onTransYChange(float tranY) {
+
+    }
+
+    @Override
     public void init() {
 //        smoothToHide();
 //        setVisibility(INVISIBLE);

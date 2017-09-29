@@ -85,6 +85,11 @@ public class MedlinkerRefreshHeaderView extends FrameLayout implements IRefreshT
     }
 
     @Override
+    public void onTransYChange(float tranY) {
+
+    }
+
+    @Override
     public void init() {
         drawable.stop();
 //        checkAnimator();

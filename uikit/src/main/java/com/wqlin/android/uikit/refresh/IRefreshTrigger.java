@@ -27,5 +27,12 @@ public interface IRefreshTrigger {
      */
     void onComplete();
 
+    /**
+     * 位置移动变化
+     */
+    void onTransYChange(float tranY);
+
     void init();
+
+
 }

@@ -43,9 +43,9 @@ public class TestRefreshViewActivity extends Activity {
                 handler.sendEmptyMessageDelayed(1, 6000);
             }
         });
-//        refreshLayout.setRefreshHeaderView(new AvLoadingRefreshView(this));
+        refreshLayout.setRefreshHeaderView(new AvLoadingRefreshView(this));
 //
-        refreshLayout.setRefreshHeaderView(new MedlinkerRefreshHeaderView(this));
+//        refreshLayout.setRefreshHeaderView(new MedlinkerRefreshHeaderView(this));
 //        refreshLayout.setEnabled(false);
         refreshLayout.setRefreshEnabled(true);
         handler.sendEmptyMessageDelayed(0, 2000);
