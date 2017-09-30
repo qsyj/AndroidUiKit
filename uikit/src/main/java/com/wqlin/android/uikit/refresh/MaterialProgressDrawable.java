@@ -114,6 +114,7 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
     private double mWidth;
     private double mHeight;
     boolean mFinishing;
+    private boolean isOk;
 
     public MaterialProgressDrawable(Context context, View parent) {
         mParent = parent;
@@ -145,8 +146,6 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
      * Set the overall size for the progress spinner. This updates the radius
      * and stroke width of the ring.
      *
-     * @param size One of {@link MaterialProgressDrawable.LARGE} or
-     *            {@link MaterialProgressDrawable.DEFAULT}
      */
     public void updateSizes(@ProgressDrawableSize int size) {
         if (size == LARGE) {
@@ -192,6 +191,10 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
         mRing.setRotation(rotation);
     }
 
+    public void setOk(boolean isOk) {
+        this.isOk = isOk;
+        mRing.setOk(isOk);
+    }
     /**
      * Update the background color of the circle image view.
      */
@@ -225,11 +228,20 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
     public void draw(Canvas c) {
         final Rect bounds = getBounds();
         final int saveCount = c.save();
-        c.rotate(mRotation, bounds.exactCenterX(), bounds.exactCenterY());
-        mRing.draw(c, bounds);
+        if (!isOk) {
+            c.rotate(mRotation, bounds.exactCenterX(), bounds.exactCenterY());
+            mRing.draw(c, bounds);
+        } else {
+            c.rotate(0, bounds.exactCenterX(), bounds.exactCenterY());
+            mRing.drawOk(c,bounds);
+        }
+
         c.restoreToCount(saveCount);
     }
 
+    private void initOk() {
+
+    }
     @Override
     public void setAlpha(int alpha) {
         mRing.setAlpha(alpha);
@@ -494,7 +506,7 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
         private final Paint mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private int mBackgroundColor;
         private int mCurrentColor;
-
+        private boolean isOk;
         Ring(Callback callback) {
             mCallback = callback;
 
@@ -546,6 +558,21 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
             }
         }
 
+        private void drawOk(Canvas c,Rect bounds) {
+            Path path = new Path();
+            path.moveTo(mStrokeInset,bounds.exactCenterY());
+            path.lineTo(bounds.exactCenterX(),bounds.bottom-mStrokeInset );
+            path.lineTo(bounds.right-mStrokeInset, bounds.top+mStrokeInset);
+            Paint paint = new Paint();
+            //设置画笔颜色
+            paint.setColor(Color.RED);
+            //设置圆弧的宽度
+            paint.setStrokeWidth(4);
+            paint.setStyle(Style.STROKE);
+            //消除锯齿
+            paint.setAntiAlias(true);
+            c.drawPath(path, paint );
+        }
         private void drawTriangle(Canvas c, float startAngle, float sweepAngle, Rect bounds) {
             if (mShowArrow) {
                 if (mArrow == null) {
@@ -699,6 +726,11 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
         @SuppressWarnings("unused")
         public void setRotation(float rotation) {
             mRotation = rotation;
+            invalidateSelf();
+        }
+
+        public void setOk(boolean isOk) {
+            this.isOk = isOk;
             invalidateSelf();
         }
 

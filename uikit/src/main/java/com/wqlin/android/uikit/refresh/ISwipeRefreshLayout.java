@@ -107,7 +107,7 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
     private boolean mIsBeingDragged;
     private int mActivePointerId = INVALID_POINTER;
     // Whether this item is scaled up rather than clipped
-    boolean mScale;
+    private boolean mScale;
 
     // Target is returning to its start offset because it was cancelled or a
     // refresh was triggered.
@@ -257,6 +257,14 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
         if (!enabled) {
             reset();
         }
+    }
+
+    public boolean isRefreshViewScale() {
+        return mScale;
+    }
+
+    public void setRefreshViewScale(boolean scale) {
+        mScale = scale;
     }
 
     /**
@@ -1056,7 +1064,7 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
                 moveToStart(interpolatedTime);
             }
         };
-        mScaleDownToStartAnimation.setDuration(SCALE_DOWN_DURATION);
+        mScaleDownToStartAnimation.setDuration(3000);
         if (listener != null) {
             mScaleDownToStartAnimation.setAnimationListener(listener);
         }
