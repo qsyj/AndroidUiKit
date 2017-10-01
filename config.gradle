@@ -80,7 +80,11 @@ ext {
 
             //test
             "timber"                    : "com.jakewharton.timber:timber:4.5.1",
-
+            "irecyclerview"             : "com.wqlin.uikit:irecyclerview:0.4"
 
     ]
+    constant =[
+            "MAVEN_URL"                 : "https://dl.bintray.com/wangqinglin110/maven/"
+    ]
+
 }
