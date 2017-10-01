@@ -691,14 +691,16 @@ public class ISwipeRefreshLayout extends ViewGroup implements NestedScrollingPar
                     mTotalUnconsumed =translationY/DRAG_RATE-dy;
                 }
             }
-            if (dy > mTotalUnconsumed) {
-                consumed[1] = dy - (int) (mTotalUnconsumed*DRAG_RATE);
-                mTotalUnconsumed = 0;
-            } else {
-                mTotalUnconsumed -= dy;
-                consumed[1] = dy;
+            if (mTotalUnconsumed > 0) {
+                if (dy > mTotalUnconsumed) {
+                    consumed[1] = dy - (int) (mTotalUnconsumed*DRAG_RATE);
+                    mTotalUnconsumed = 0;
+                } else {
+                    mTotalUnconsumed -= dy;
+                    consumed[1] = dy;
+                }
+                moveSpinner(mTotalUnconsumed*DRAG_RATE);
             }
-            moveSpinner(mTotalUnconsumed*DRAG_RATE);
         }
 
         // If a client layout is using a custom start position for the circle

@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 
 import com.wang.avi.AVLoadingIndicatorView;
 import com.wang.avi.indicators.LineScaleIndicator;
-
 import com.wqlin.android.uikit.refresh.IRefreshTrigger;
 import com.wqlin.android.uikit.util.DimenUtil;
 
@@ -49,7 +48,6 @@ public class AvLoadingRefreshView extends AVLoadingIndicatorView implements IRef
 
     @Override
     public void onReleaseToRefresh() {
-
     }
 
     @Override

@@ -40,9 +40,10 @@ public class TestRefreshViewActivity extends Activity {
             @Override
             public void onRefresh() {
                 // do refresh ...
-                handler.sendEmptyMessageDelayed(1, 6000);
+                handler.sendEmptyMessageDelayed(1, 2000);
             }
         });
+
 //        refreshLayout.setRefreshHeaderView(new AvLoadingRefreshView(this));
         refreshLayout.setRefreshHeaderView(new MaterialRefreshView(this));
 //
