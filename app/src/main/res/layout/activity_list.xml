@@ -21,7 +21,7 @@
             app:contentScrim="?attr/colorPrimary"
             android:fitsSystemWindows="true"
             app:statusBarScrim="@android:color/transparent"
-            app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap">
+            app:layout_scrollFlags="scroll|enterAlways|snap">
 
             <ImageView
                 android:layout_width="match_parent"
