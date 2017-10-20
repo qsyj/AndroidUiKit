@@ -30,8 +30,9 @@ dependencies {
         exclude module: 'support-annotations'
         exclude module: 'support-v4'
     }
-//    compile rootProject.ext.dependencies["recyclerview-v7"]
+    compile rootProject.ext.dependencies["recyclerview-v7"]
     compile rootProject.ext.dependencies["constraint-layout"]
+    compile rootProject.ext.dependencies["cardview-v7"]
     compile(rootProject.ext.dependencies["butterknife"]) {
         exclude module: 'support-annotations'
     }

@@ -32,5 +32,10 @@ dependencies {
     compile rootProject.ext.dependencies["multitype"]
     compile rootProject.ext.dependencies["design"]
     testCompile rootProject.ext.dependencies["junit"]
-    compile rootProject.ext.dependencies["irecyclerview"]
+    compile(rootProject.ext.dependencies["irecyclerview"]){
+        exclude group: 'com.android.support',module: 'recyclerview-v7'
+    }
+    compile(rootProject.ext.dependencies["snaphelper"]){
+        exclude group: 'com.android.support',module: 'recyclerview-v7'
+    }
 }

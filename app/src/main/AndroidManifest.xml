@@ -44,7 +44,25 @@
             </intent-filter>
 
         </activity>
+        <activity android:name="com.wqlin.android.sample.snap.PagerRecyclerActivity"
+                  android:label="snap/pagerRecyclerActivity"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.wqlin.android.sample.cagegory" />
+            </intent-filter>
 
+        </activity>
+        <activity android:name="com.wqlin.android.sample.snap.SnapMainActivity"
+                  android:label="snap/snapMainActivity"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.wqlin.android.sample.cagegory" />
+            </intent-filter>
+
+        </activity>
+        <activity android:name=".snap.GridActivity"/>
         <!--animation-->
         <activity android:name="com.wqlin.android.sample.animation.TestAnimationActivity"
             android:label="animation/TestAnimationActivity"
