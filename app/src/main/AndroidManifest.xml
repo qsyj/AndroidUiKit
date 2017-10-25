@@ -75,7 +75,15 @@
         </activity>
 
         <!--animation-->
+        <activity android:name="com.wqlin.android.sample.swipe.SwipeMenuActivity"
+                  android:label="swipe/SwipeMenuActivity"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.wqlin.android.sample.cagegory" />
+            </intent-filter>
 
+        </activity>
 
         <!--<activity android:name=".refresh.TestRefreshViewActivity"/>-->
     </application>
