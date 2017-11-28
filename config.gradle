@@ -81,7 +81,7 @@ ext {
             //test
             "timber"                    : "com.jakewharton.timber:timber:4.5.1",
             "irecyclerview"             : "com.wqlin.uikit:irecyclerview:0.4",
-            "snaphelper"                : "com.wqlin.uikit:snaphelper:0.2"
+            "snaphelper"                : "com.wqlin.uikit:snaphelper:0.6"
 
     ]
     constant =[
