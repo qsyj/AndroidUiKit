@@ -23,19 +23,22 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestApi('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    testApi rootProject.ext.dependencies["junit"]
+
 //    compile rootProject.ext.dependencies["recyclerview-v7"]
-    compile rootProject.ext.dependencies["constraint-layout"]
-    compile rootProject.ext.dependencies["multitype"]
-    compile rootProject.ext.dependencies["design"]
-    testCompile rootProject.ext.dependencies["junit"]
-    compile(rootProject.ext.dependencies["irecyclerview"]){
+    api rootProject.ext.dependencies["constraint-layout"]
+    api rootProject.ext.dependencies["design"]
+    api(rootProject.ext.dependencies["irecyclerview"]){
         exclude group: 'com.android.support',module: 'recyclerview-v7'
     }
-    compile(rootProject.ext.dependencies["snaphelper"]){
+    api(rootProject.ext.dependencies["snaphelper"]){
         exclude group: 'com.android.support',module: 'recyclerview-v7'
     }
+    implementation rootProject.ext.dependencies["multitype"]
+    implementation rootProject.ext.dependencies["fresco"]
+    implementation rootProject.ext.dependencies["frescoImagepipeline"]
 }

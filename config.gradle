@@ -13,7 +13,8 @@ ext {
             dagger2Version          : "2.8",
             retrofitVersion         : "2.2.0",
             butterknifeVersion      : "8.5.1",
-            rxlifecycleVersion      : "2.0.1"
+            rxlifecycleVersion      : "2.0.1",
+            frescoVersion           : "1.3.0"
     ]
 
     dependencies = [
@@ -81,7 +82,9 @@ ext {
             //test
             "timber"                    : "com.jakewharton.timber:timber:4.5.1",
             "irecyclerview"             : "com.wqlin.uikit:irecyclerview:0.5.2",
-            "snaphelper"                : "com.wqlin.uikit:snaphelper:0.9.4.4"
+            "snaphelper"                : "com.wqlin.uikit:snaphelper:0.9.4.4",
+            "fresco"                    : "com.facebook.fresco:fresco:${versions[ "frescoVersion"]}",
+            "frescoImagepipeline"       : "com.facebook.fresco:imagepipeline-okhttp3:${versions[ "frescoVersion"]}"
 
     ]
     constant =[
