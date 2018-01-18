@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.IRecyclerView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -30,12 +31,14 @@ public class TestRefreshViewActivity extends Activity {
 
     ISwipeRefreshLayout refreshLayout;
     MultiTypeLoadMoreAdapter adapter;
+    private IRecyclerView mRecyclerView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        refreshLayout = (ISwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        refreshLayout = findViewById(R.id.refresh_layout);
         refreshLayout.setOnRefreshListener(new ISwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -52,18 +55,18 @@ public class TestRefreshViewActivity extends Activity {
         refreshLayout.setRefreshEnabled(true);
         handler.sendEmptyMessageDelayed(0, 2000);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mRecyclerView = findViewById(R.id.recyclerView);
         IDividerItemDecoration divierDecoration = new IDividerItemDecoration(this, IDividerItemDecoration.VERTICAL);
         divierDecoration.setVerticalDividerHeight(3);
         divierDecoration.setDividerColor(Color.BLUE);
         divierDecoration.setDividerPadding(30);
-        recyclerView.addItemDecoration(divierDecoration);
+        mRecyclerView.addItemDecoration(divierDecoration);
 //        recyclerView.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new MultiTypeLoadMoreAdapter();
         adapter.register(TextItem.class, new TextItemViewBinder());
-        recyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(adapter);
         adapter.setLoadMoreItemRetryListener(new OnLoadMoreRetryListener() {
             @Override
             public void onRetry() {
@@ -94,6 +97,12 @@ public class TestRefreshViewActivity extends Activity {
         adapter.setItems(createItems());
         adapter.notifyDataSetChanged();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mRecyclerView.destory();
     }
 
     boolean isLoading;
