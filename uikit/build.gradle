@@ -32,13 +32,22 @@ dependencies {
 //    compile rootProject.ext.dependencies["recyclerview-v7"]
     api rootProject.ext.dependencies["constraint-layout"]
     api rootProject.ext.dependencies["design"]
+
     api(rootProject.ext.dependencies["irecyclerview"]){
         exclude group: 'com.android.support',module: 'recyclerview-v7'
     }
+
     api(rootProject.ext.dependencies["snaphelper"]){
         exclude group: 'com.android.support',module: 'recyclerview-v7'
     }
+
     implementation rootProject.ext.dependencies["multitype"]
+
+    //DefaultDraweeView时依赖
     implementation rootProject.ext.dependencies["fresco"]
     implementation rootProject.ext.dependencies["frescoImagepipeline"]
+
+    //sdk26以上时依赖":v4anim",解决v4包bug
+    implementation project(":v4anim")
+    implementation rootProject.ext.dependencies["support-v4"]
 }

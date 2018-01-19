@@ -20,4 +20,7 @@
         <attr name="iconBackgroudColor" format="color" />
         <attr name="iconResId" format="reference" />
     </declare-styleable>
+    <declare-styleable name="StrongTabLayout">
+        <attr name="selectedIndicatorWidth" format="dimension" />
+    </declare-styleable>
 </resources>

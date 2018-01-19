@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.wqlin.android.sample">
+          package="com.wqlin.android.sample">
 
     <application
         android:allowBackup="true"
@@ -9,83 +9,86 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name="com.wqlin.android.sample.HomeActivity">
-
+        <activity android:name=".HomeActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <activity android:name="com.wqlin.android.sample.refresh.TestRefreshViewActivity"
+        <activity
+            android:name=".refresh.TestRefreshViewActivity"
             android:label="refresh/TestRefreshViewActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="com.wqlin.android.sample.cagegory" />
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="com.wqlin.android.sample.cagegory"/>
             </intent-filter>
         </activity>
-
-        <activity android:name="com.wqlin.android.sample.tablayout.SlidingTabActivity"
+        <activity
+            android:name=".tablayout.SlidingTabActivity"
             android:label="tablayout/SlidingTabActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="com.wqlin.android.sample.cagegory" />
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="com.wqlin.android.sample.cagegory"/>
             </intent-filter>
         </activity>
-
-
-        <activity android:name="com.wqlin.android.sample.common.SimpleFragmentActivity"
-            android:label="common/simpleFragmentActivity"
-            >
+        <activity
+            android:name=".common.SimpleFragmentActivity"
+            android:label="common/simpleFragmentActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
-
         </activity>
-        <activity android:name="com.wqlin.android.sample.snap.PagerRecyclerActivity"
-                  android:label="snap/pagerRecyclerActivity"
-            >
+        <activity
+            android:name=".snap.PagerRecyclerActivity"
+            android:label="snap/pagerRecyclerActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="com.wqlin.android.sample.cagegory" />
-            </intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
 
+                <category android:name="com.wqlin.android.sample.cagegory"/>
+            </intent-filter>
         </activity>
-        <activity android:name="com.wqlin.android.sample.snap.SnapMainActivity"
-                  android:label="snap/snapMainActivity"
-            >
+        <activity
+            android:name=".snap.SnapMainActivity"
+            android:label="snap/snapMainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="com.wqlin.android.sample.cagegory" />
-            </intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
 
+                <category android:name="com.wqlin.android.sample.cagegory"/>
+            </intent-filter>
         </activity>
         <activity android:name=".snap.GridActivity"/>
-        <!--animation-->
-        <activity android:name="com.wqlin.android.sample.animation.TestAnimationActivity"
-            android:label="animation/TestAnimationActivity"
-            >
+        <!-- animation -->
+        <activity
+            android:name=".animation.TestAnimationActivity"
+            android:label="animation/TestAnimationActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="com.wqlin.android.sample.cagegory" />
-            </intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
 
+                <category android:name="com.wqlin.android.sample.cagegory"/>
+            </intent-filter>
         </activity>
 
-        <!--animation-->
-        <activity android:name="com.wqlin.android.sample.swipe.SwipeMenuActivity"
-                  android:label="swipe/SwipeMenuActivity"
-            >
+        <!-- animation -->
+        <activity
+            android:name=".swipe.SwipeMenuActivity"
+            android:label="swipe/SwipeMenuActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="com.wqlin.android.sample.cagegory" />
-            </intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
 
+                <category android:name="com.wqlin.android.sample.cagegory"/>
+            </intent-filter>
         </activity>
 
-        <!--<activity android:name=".refresh.TestRefreshViewActivity"/>-->
+        <activity android:name=".strongtablayout.StrongTabLaoutActivity"
+                  android:label="strongTab/StrongTabLaoutActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="com.wqlin.android.sample.cagegory"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

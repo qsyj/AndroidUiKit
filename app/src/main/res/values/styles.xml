@@ -13,4 +13,23 @@
         <item name="colorAccent">@android:color/transparent</item>
     </style>
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="TabLayoutStyle" >
+        <item name="tabGravity">center</item>
+        <item name="tabIndicatorColor">#007aff</item>
+        <item name="tabIndicatorHeight">1.3dp</item>
+        <item name="tabMode">scrollable</item>
+        <item name="tabSelectedTextColor">#007aff</item>
+        <item name="tabTextAppearance">@style/TabLayoutTextAppearance</item>
+        <item name="tabTextColor">#333333</item>
+        <item name="tabMinWidth">20dp</item>
+        <item name="tabPaddingStart">10dp</item>
+        <item name="tabPaddingEnd">10dp</item>
+        <item name="tabPaddingTop">0dp</item>
+        <item name="tabPaddingBottom">0dp</item>
+        <item name="selectedIndicatorWidth">17dp</item>
+    </style>
+    <style name="TabLayoutTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>

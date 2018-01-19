@@ -84,8 +84,7 @@ ext {
             "irecyclerview"             : "com.wqlin.uikit:irecyclerview:0.5.2",
             "snaphelper"                : "com.wqlin.uikit:snaphelper:0.9.4.4",
             "fresco"                    : "com.facebook.fresco:fresco:${versions[ "frescoVersion"]}",
-            "frescoImagepipeline"       : "com.facebook.fresco:imagepipeline-okhttp3:${versions[ "frescoVersion"]}"
-
+            "frescoImagepipeline"       : "com.facebook.fresco:imagepipeline-okhttp3:${versions[ "frescoVersion"]}",
     ]
     constant =[
             "MAVEN_URL"                 : "https://dl.bintray.com/wangqinglin110/maven/"
