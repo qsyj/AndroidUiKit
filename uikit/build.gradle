@@ -33,11 +33,11 @@ dependencies {
     api rootProject.ext.dependencies["constraint-layout"]
     api rootProject.ext.dependencies["design"]
 
-    api(rootProject.ext.dependencies["irecyclerview"]){
+    implementation(rootProject.ext.dependencies["irecyclerview"]){
         exclude group: 'com.android.support',module: 'recyclerview-v7'
     }
 
-    api(rootProject.ext.dependencies["snaphelper"]){
+    implementation(rootProject.ext.dependencies["snaphelper"]){
         exclude group: 'com.android.support',module: 'recyclerview-v7'
     }
 
