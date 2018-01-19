@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">UiKit</string>
+    <string name="app_name">ui</string>
     <string name="uikit_loadmore_default_tips">加载更多</string>
     <string name="uikit_loadmore_failed_tips">加载失败，点击重试</string>
     <string name="uikit_loadmore_complete_tips">没有更多了</string>
