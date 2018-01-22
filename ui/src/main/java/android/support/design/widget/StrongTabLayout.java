@@ -34,6 +34,7 @@ import android.support.v7.widget.TooltipCompat;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -65,6 +66,10 @@ import static android.support.v4.view.ViewPager.SCROLL_STATE_SETTLING;
  * 设置指示器 固定宽度 {@link #setSelectedTabIndicatorWidth(int)} 属性设置selectedIndicatorWidth
  * <p>
  * 点击Tab切换时 设置指示器 是否动画移动 {@link #setAnimIndicatorWhenClickTab(boolean)}
+ * <p>
+ * 新增方法{@link SlidingTabStrip#animateIndicatorToPosition(int, int, int, int)} 优化animateToTab的动画效果
+ *  <p>
+ *  {@link #isAnimateToTab}-->优化animateToTab的动画效果, 当调用animateToTab()来更新指示器和HorizontalScrollView时,onPageSelected() onPageScrolled()不更新指示器和HorizontalScrollView,将在ViewPager静止时false
  * @author wangql
  * @email wangql@leleyuntech.com
  * @date 2017/12/28 11:16
@@ -204,8 +209,12 @@ public class StrongTabLayout extends HorizontalScrollView {
     private AdapterChangeListener mAdapterChangeListener;
     private boolean mSetupViewPagerImplicitly;
     /**点击tab切换页面 是否允许指示器动画*/
-    private boolean mIsAnimIndicatorWhenClickTab;
+    private boolean mIsAnimIndicatorWhenClickTab=true;
     private boolean mIsTabClick;
+    /**当调用animateToTab()来更新指示器和HorizontalScrollView时,onPageSelected() onPageScrolled()不更新指示器和HorizontalScrollView,将在ViewPager静止时false*/
+    private boolean isAnimateToTab = false;
+    /**HorizontalScrollView最大滑动距离*/
+    private int mMaxScrollX = 0;
 
     // Pool we use as a simple RecyclerBin
     private final Pools.Pool<TabView> mTabViewPool = new Pools.SimplePool<>(12);
@@ -1011,6 +1020,29 @@ public class StrongTabLayout extends HorizontalScrollView {
                 child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
             }
         }
+        calculateMaxScrollX();
+    }
+
+    /**HorizontalScrollView最大滑动距离*/
+    private void calculateMaxScrollX() {
+        int childCount = getChildCount();
+        int x = 0;
+        for (int i = 0; i < childCount; i++) {
+            View view = getChildAt(i);
+            int width = view.getMeasuredWidth();
+            LayoutParams params = (LayoutParams) view.getLayoutParams();
+            int margin = params.leftMargin + params.rightMargin;
+            x += (width + margin);
+        }
+        mMaxScrollX = x - getMeasuredWidth();
+    }
+
+    /**纠正scrollX*/
+    private int correctScrollX(int scrollX) {
+        if (scrollX<0)
+            return 0;
+
+        return scrollX>mMaxScrollX?mMaxScrollX:scrollX;
     }
 
     private void removeTabViewAt(int position) {
@@ -1035,7 +1067,7 @@ public class StrongTabLayout extends HorizontalScrollView {
             setScrollPosition(newPosition, 0f, true);
             return;
         }
-
+        isAnimateToTab = true;
         final int startScrollX = getScrollX();
         final int targetScrollX = calculateScrollXForTab(newPosition, 0);
 
@@ -1047,7 +1079,7 @@ public class StrongTabLayout extends HorizontalScrollView {
         }
 
         // Now animate the indicator
-        mTabStrip.animateIndicatorToPosition(newPosition, ANIMATION_DURATION);
+        mTabStrip.animateIndicatorToPosition(newPosition,startScrollX,targetScrollX ,ANIMATION_DURATION);
     }
 
     private void ensureScrollAnimator() {
@@ -1146,10 +1178,10 @@ public class StrongTabLayout extends HorizontalScrollView {
             int scrollBase = selectedChild.getLeft() + (selectedWidth / 2) - (getWidth() / 2);
             // offset amount: fraction of the distance between centers of tabs
             int scrollOffset = (int) ((selectedWidth + nextWidth) * 0.5f * positionOffset);
-
-            return (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_LTR)
+            int scrollX = (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_LTR)
                     ? scrollBase + scrollOffset
                     : scrollBase - scrollOffset;
+            return correctScrollX(scrollX);
         }
         return 0;
     }
@@ -1924,6 +1956,76 @@ public class StrongTabLayout extends HorizontalScrollView {
             }
         }
 
+        /**优化animateToTab的动画效果*/
+        void animateIndicatorToPosition(final int position,final int startScrollX,final int targetScrollX,final int duration) {
+            if (mIndicatorAnimator != null && mIndicatorAnimator.isRunning()) {
+                mIndicatorAnimator.cancel();
+            }
+            final View targetView = getChildAt(position);
+            final View selectedView = getChildAt(mSelectedPosition);
+            if (targetView == null||selectedView==null) {
+                // If we don't have a view, just update the position now and return
+                updateIndicatorPosition();
+                return;
+            }
+
+            int selectedLeft = selectedView.getLeft();
+            int selectedRight = selectedView.getRight();
+
+            final int startLeft,startRight,endLeft,endRight;
+            final int startWidth, endWidth;
+            final int startMid, targetMid,endMid;
+            final int ddX,ddWidth;
+
+            startLeft = selectedLeft;
+            startRight = selectedRight;
+            startMid = (int) ((startLeft + startRight) * 1f / 2f);
+            targetMid = (int) ((targetView.getRight() + targetView.getLeft()) * 1f / 2f);
+            endMid = targetMid - (targetScrollX - startScrollX);
+            ddX = endMid-startMid;
+            endLeft = (int) (endMid - (targetView.getWidth() * 1f / 2f));
+            endRight = endLeft + targetView.getWidth();
+
+            startWidth = startRight - startLeft;
+            endWidth = endRight - endLeft;
+
+            ddWidth = endWidth - startWidth;
+
+            ValueAnimator animator = mIndicatorAnimator = new ValueAnimator();
+            animator.setInterpolator(AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR);
+            animator.setDuration(duration);
+            animator.setFloatValues(0, 1);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animator) {
+                    if (!mIsAnimIndicatorWhenClickTab && mIsTabClick) {
+                        setIndicatorPosition(position);
+                    } else {
+                        View view = getChildAt(position);
+                        final float fraction = animator.getAnimatedFraction();
+                        int mid = (int) (((view.getLeft()+view.getRight())*1f/2f)-(1f-fraction)*ddX);
+                        float width =  (startWidth + fraction * ddWidth);
+                        int left = (int) (mid - (width / 2f));
+                        int right = (int) (left + width);
+                        setIndicatorPosition(left,right);
+                    }
+                }
+            });
+
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    if (!mIsAnimIndicatorWhenClickTab && mIsTabClick)
+                        setIndicatorPosition(position);
+                    setTabClick(false);
+                    mSelectedPosition = position;
+                    mSelectionOffset = 0f;
+                }
+            });
+
+            animator.start();
+        }
+
         void animateIndicatorToPosition(final int position, int duration) {
             if (mIndicatorAnimator != null && mIndicatorAnimator.isRunning()) {
                 mIndicatorAnimator.cancel();
@@ -1967,7 +2069,6 @@ public class StrongTabLayout extends HorizontalScrollView {
                     }
                 }
             }
-
             if (startLeft != targetLeft || startRight != targetRight) {
                 ValueAnimator animator = mIndicatorAnimator = new ValueAnimator();
                 animator.setInterpolator(AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR);
@@ -2101,6 +2202,10 @@ public class StrongTabLayout extends HorizontalScrollView {
         public void onPageScrollStateChanged(final int state) {
             mPreviousScrollState = mScrollState;
             mScrollState = state;
+            if (state == SCROLL_STATE_IDLE) {
+                final StrongTabLayout tabLayout = mTabLayoutRef.get();
+                tabLayout.isAnimateToTab = false;
+            }
         }
 
         @Override
@@ -2117,7 +2222,8 @@ public class StrongTabLayout extends HorizontalScrollView {
                 // onPageSelected() instead.
                 final boolean updateIndicator = !(mScrollState == SCROLL_STATE_SETTLING
                         && mPreviousScrollState == SCROLL_STATE_IDLE);
-                tabLayout.setScrollPosition(position, positionOffset, updateText, updateIndicator);
+                if (!tabLayout.isAnimateToTab)
+                    tabLayout.setScrollPosition(position, positionOffset, updateText, updateIndicator);
             }
         }
 
@@ -2131,7 +2237,8 @@ public class StrongTabLayout extends HorizontalScrollView {
                 final boolean updateIndicator = mScrollState == SCROLL_STATE_IDLE
                         || (mScrollState == SCROLL_STATE_SETTLING
                         && mPreviousScrollState == SCROLL_STATE_IDLE);
-                tabLayout.selectTab(tabLayout.getTabAt(position), updateIndicator);
+                if (!tabLayout.isAnimateToTab)
+                    tabLayout.selectTab(tabLayout.getTabAt(position), updateIndicator);
             }
         }
 
