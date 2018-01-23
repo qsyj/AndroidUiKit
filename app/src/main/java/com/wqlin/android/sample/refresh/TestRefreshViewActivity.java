@@ -6,9 +6,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.IRecyclerView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.WRecyclerView;
 
 import com.wqlin.android.sample.R;
 import com.wqlin.android.uikit.adapter.LoadMoreDelegate;
@@ -31,14 +31,14 @@ public class TestRefreshViewActivity extends Activity {
 
     ISwipeRefreshLayout refreshLayout;
     MultiTypeLoadMoreAdapter adapter;
-    private IRecyclerView mRecyclerView;
+    private WRecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        refreshLayout = findViewById(R.id.refresh_layout);
+        refreshLayout = (ISwipeRefreshLayout) findViewById(R.id.refresh_layout);
         refreshLayout.setOnRefreshListener(new ISwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -55,7 +55,7 @@ public class TestRefreshViewActivity extends Activity {
         refreshLayout.setRefreshEnabled(true);
         handler.sendEmptyMessageDelayed(0, 2000);
 
-        mRecyclerView = findViewById(R.id.recyclerView);
+        mRecyclerView = (WRecyclerView) findViewById(R.id.recyclerView);
         IDividerItemDecoration divierDecoration = new IDividerItemDecoration(this, IDividerItemDecoration.VERTICAL);
         divierDecoration.setVerticalDividerHeight(3);
         divierDecoration.setDividerColor(Color.BLUE);

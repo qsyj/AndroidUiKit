@@ -4,10 +4,10 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
-        google()
+//        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:2.2.0'
 
         //butterknife
         classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
@@ -17,22 +17,22 @@ buildscript {
     }
 }
 
-subprojects {
-    afterEvaluate {
-        project -> if (project.hasProperty("android")) {
-            android {
-                compileSdkVersion rootProject.ext.android["compileSdkVersion"]
-                buildToolsVersion rootProject.ext.android["buildToolsVersion"]
-            }
-        }
-    }
-}
+//subprojects {
+//    afterEvaluate {
+//        project -> if (project.hasProperty("android")) {
+//            android {
+//                compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+//                buildToolsVersion rootProject.ext.android["buildToolsVersion"]
+//            }
+//        }
+//    }
+//}
 
 allprojects {
     repositories {
         mavenCentral()
         jcenter()
-        google()
+//        google()
 //        maven { url rootProject.ext.constant["MAVEN_URL"] }
     }
 }

@@ -34,7 +34,7 @@ public class TabFragment extends Fragment {
         Bundle bundle = getArguments();
         String text = bundle.getString("text");
         View view = inflater.inflate(R.layout.fragment_tab, container, false);
-        TextView tv = view.findViewById(R.id.textView);
+        TextView tv = (TextView) view.findViewById(R.id.textView);
         tv.setText(text);
         return view;
     }

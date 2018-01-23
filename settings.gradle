@@ -1,1 +1,1 @@
-include ':app', ':ui', ':v4anim'
+include ':app', ':ui'//, ':v4anim'

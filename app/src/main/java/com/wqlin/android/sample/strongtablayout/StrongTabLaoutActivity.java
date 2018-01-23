@@ -22,8 +22,8 @@ public class StrongTabLaoutActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mTablayout = findViewById(R.id.tab_layout);
-        mViewPager =  findViewById(R.id.viewpager);
+        mTablayout = (StrongTabLayout) findViewById(R.id.tab_layout);
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mAdapter = new TabAdapter(getSupportFragmentManager());
         mAdapter.setItems(getData());
         mViewPager.setAdapter(mAdapter);
