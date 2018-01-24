@@ -1,5 +1,8 @@
 package android.support.design.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -65,7 +68,7 @@ import static android.support.v4.view.ViewPager.SCROLL_STATE_SETTLING;
  * <p>
  * 新增方法{@link SlidingTabStrip#animateIndicatorToPosition(int, int, int, int)} 优化animateToTab的动画效果
  *  <p>
- *  {@link #isAnimateToTab}-->优化animateToTab的动画效果, 当调用animateToTab()来更新指示器和HorizontalScrollView时,onPageSelected() onPageScrolled()不更新指示器和HorizontalScrollView,将在ViewPager静止时false
+ *  {@link #isAnimateToTab}-->优化animateToTab的动画效果, 当调用animateToTab()来更新指示器和HorizontalScrollView时,onPageSelected() onPageScrolled()不更新指示器和HorizontalScrollView,将在ViewPager静止时false或则动画结束为false
  * @author wangql
  * @email wangql@leleyuntech.com
  * @date 2017/12/28 11:16
@@ -1064,15 +1067,25 @@ public class StrongTabLayout extends HorizontalScrollView{
             setScrollPosition(newPosition, 0f, true);
             return;
         }
-        isAnimateToTab = true;
+
         final int startScrollX = getScrollX();
         final int targetScrollX = calculateScrollXForTab(newPosition, 0);
 
         if (startScrollX != targetScrollX) {
+            if (newPosition != mTabStrip.mSelectedPosition) {
+                isAnimateToTab = true;
+            }
             if (mScrollAnimator == null) {
                 mScrollAnimator = ViewUtils.createAnimator();
                 mScrollAnimator.setInterpolator(AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR);
                 mScrollAnimator.setDuration(ANIMATION_DURATION);
+                mScrollAnimator.addListener(new ValueAnimatorCompat.AnimatorListenerAdapter(){
+                    @Override
+                    public void onAnimationEnd(ValueAnimatorCompat animator) {
+                        if (mPageChangeListener.mScrollState==SCROLL_STATE_IDLE)
+                            isAnimateToTab = false;
+                    }
+                });
                 mScrollAnimator.addUpdateListener(new ValueAnimatorCompat.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimatorCompat animator) {
