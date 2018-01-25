@@ -47,11 +47,12 @@ dependencies {
 
     //sdk26以上时依赖":v4anim",解决v4包bug
     //implementation project(":v4anim")
-    //implementation rootProject.ext.dependencies["support-v4"]
+    //implementation rootProj
+    // ect.ext.dependencies["support-v4"]
 }
 
 
-version = "0.0.5"	//aar的版本号
+version = "0.0.9"	//aar的版本号
 def siteUrl = 'https://github.com/qsyj/AndroidUiKit.git'    // 项目主页
 def gitUrl = 'git@github.com:qsyj/AndroidUiKit.git' // 项目的git地址
 def module_name = 'ui'	// 项目的名称
