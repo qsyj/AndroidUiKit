@@ -14,13 +14,13 @@
         <attr name="ios" format="boolean"/>
         <attr name="leftSwipe" format="boolean"/>
     </declare-styleable>
-    <declare-styleable name="DefaultDraweeView">
-        <attr name="iconWidth" format="dimension" />
-        <attr name="iconHeight" format="dimension" />
-        <attr name="iconBackgroudColor" format="color" />
-        <attr name="iconPlaceholderResId" format="reference" />
-    </declare-styleable>
     <declare-styleable name="StrongTabLayout">
         <attr name="selectedIndicatorWidth" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="PlaceholderDraweeView">
+        <attr name="placeholderIconWidth" format="dimension" />
+        <attr name="placeholderIconHeight" format="dimension" />
+        <attr name="placeholderIconBgColor" format="color" />
+        <attr name="placeholderIconId" format="reference" />
     </declare-styleable>
 </resources>

@@ -1,6 +1,8 @@
 package com.wqlin.android.uikit.widget;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -13,40 +15,83 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.wqlin.android.uikit.util.Preconditions;
 
 import java.util.Arrays;
 
 /**
- *背景图+中间图片组成的Drawable,可以作为图片加载时的占位图使用
+ *  背景图+中间图片组成的Drawable,可以作为图片加载时的占位图使用
+ * <p>
+ * 不使用Bitmap.createBitmap()缩放图片 可能造成内存泄漏,最好用BitmapFactory.decodeResource()获取Bitmap前缩放到最合适的大小,
+ * 再draw()中canvas.drawBitmap(Bitmap, Matrix, Paint)缩放图片到具体大小
  * @author wangql
  * @email wangql@leleyuntech.com
  * @date 2018/1/5 9:48
  */
-public class DefaultDrawable extends Drawable {
+public class PlaceholderDrawable extends Drawable {
     private Params mParams;
     private Bitmap mBitmap;
     private int mWidth = 0;
     private int mHeight = 0;
 
+    @VisibleForTesting
     final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path mPath = new Path();
     private final Path mBorderPath = new Path();
     private final RectF mTempRectangle = new RectF();
 
-    public DefaultDrawable(Bitmap bitmap, Params params){
+
+    @Deprecated
+    public PlaceholderDrawable(Bitmap bitmap, Params params){
         setParams(params);
-        setBitmap(bitmap,params);
+        mBitmap = bitmap;
     }
 
-    private void setBitmap(Bitmap bitmap, Params params) {
+    public PlaceholderDrawable(Resources resources, int drawaleId, Params params){
+        setParams(params);
+        mBitmap = createBitmap(resources, drawaleId, params);
+
+    }
+    private Bitmap createBitmap(Resources resources,int resId,Params params) {
+        if (resources==null||params==null||resId<0) return null;
+        Bitmap bitmap = null;
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeResource(resources, resId,options);
+            int imageHeight = options.outHeight;
+            int imageWidth = options.outWidth;
+            int wS = (int) Math.round((imageWidth /params.getBitmapWidth() )+0.6);
+            int hS= (int) Math.round((imageHeight /params.getBitmapHeight() )+0.6);
+            options.inSampleSize = 1;
+            if (wS > 1 || hS > 1) {
+                options.inSampleSize = wS > hS ? hS : wS;
+            }
+            options.inJustDecodeBounds = false;
+            bitmap = BitmapFactory.decodeResource(resources, resId,options);
+        } catch (Exception ep) {
+            ep.printStackTrace();
+        }
+        return bitmap;
+    }
+
+    /**
+     * 不使用Bitmap.createBitmap()缩放图片 可能造成内存泄漏
+     * @param bitmap
+     * @param params
+     */
+    @Deprecated
+    private void setBitmap(Bitmap bitmap,Params params) {
         if (params==null) return;
+        mBitmap = bitmap;
         // 定义矩阵对象
         Matrix matrix = new Matrix();
         // 缩放原图
         matrix.postScale(params.getBitmapWidth()/bitmap.getWidth(), params.getBitmapHeight()/bitmap.getHeight());
         mBitmap= Bitmap.createBitmap(bitmap, 0, 0, bitmap.getHeight(), bitmap.getWidth(),matrix, true);
+        bitmap.recycle();
     }
 
     protected void onBoundsChange(Rect bounds) {
@@ -71,9 +116,12 @@ public class DefaultDrawable extends Drawable {
             float halfH = (mHeight - mParams.mBitmapHeight) * 1f / 2;
             float left = rect.left + halfW;
             float top = rect.top + halfH;
-            canvas.drawBitmap(mBitmap, left, top, null);
+            //缩放 移动
+            Matrix matrix = new Matrix();
+            matrix.setScale(mParams.getBitmapWidth()/mBitmap.getWidth(), mParams.getBitmapHeight()/mBitmap.getHeight());
+            matrix.postTranslate(left, top);
+            canvas.drawBitmap(mBitmap, matrix, null);
         }
-
         if (mParams.mBorderColor != Color.TRANSPARENT) {
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setColor(mParams.mBorderColor);
