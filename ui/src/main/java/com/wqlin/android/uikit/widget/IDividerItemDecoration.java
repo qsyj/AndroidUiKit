@@ -10,6 +10,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -129,8 +130,11 @@ public class IDividerItemDecoration extends RecyclerView.ItemDecoration{
         final int childCount = parent.getChildCount();
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
+            RecyclerView.LayoutParams childParams = (RecyclerView.LayoutParams) child.getLayoutParams();
             parent.getDecoratedBoundsWithMargins(child, mBounds);
-            int bottom = mBounds.bottom + Math.round(ViewCompat.getTranslationY(child));
+            int adapterPosition=childParams.getViewAdapterPosition();
+            Log.e("IDividerItemDecoration", "adapterPosition:" +parent.getChildAdapterPosition(child));
+            int bottom = mBounds.bottom /*+ Math.round(ViewCompat.getTranslationY(child))*/;
             int top = bottom - mDivider.getIntrinsicHeight();
             if(mVerticalDividerHeight > 0){//如果设置了高度，调整top的值
                 top = bottom - mVerticalDividerHeight;

@@ -9,14 +9,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.WRecyclerView;
+import android.view.View;
 
 import com.wqlin.android.sample.R;
-import com.wqlin.android.uikit.adapter.LoadMoreDelegate;
-import com.wqlin.android.uikit.adapter.LoadMoreItem;
-import com.wqlin.android.uikit.adapter.MultiTypeLoadMoreAdapter;
-import com.wqlin.android.uikit.adapter.OnLoadMoreRetryListener;
 import com.wqlin.android.uikit.refresh.ISwipeRefreshLayout;
-import com.wqlin.android.uikit.widget.IDividerItemDecoration;
+import com.wqlin.android.uikit.widget.BaseItemDecoration;
+import com.wqlin.android.uikit.widget.ItemDecorationConfig;
+import com.wqlin.widget.irecyclerview.OnLoadMoreListener;
 
 import java.util.List;
 import java.util.Random;
@@ -30,7 +29,7 @@ import me.drakeet.multitype.Items;
 public class TestRefreshViewActivity extends Activity {
 
     ISwipeRefreshLayout refreshLayout;
-    MultiTypeLoadMoreAdapter adapter;
+    TextAdapter adapter;
     private WRecyclerView mRecyclerView;
 
     @Override
@@ -56,45 +55,32 @@ public class TestRefreshViewActivity extends Activity {
         handler.sendEmptyMessageDelayed(0, 2000);
 
         mRecyclerView = (WRecyclerView) findViewById(R.id.recyclerView);
-        IDividerItemDecoration divierDecoration = new IDividerItemDecoration(this, IDividerItemDecoration.VERTICAL);
+        /*IDividerItemDecoration divierDecoration = new IDividerItemDecoration(this, IDividerItemDecoration.VERTICAL);
         divierDecoration.setVerticalDividerHeight(3);
         divierDecoration.setDividerColor(Color.BLUE);
         divierDecoration.setDividerPadding(30);
-        mRecyclerView.addItemDecoration(divierDecoration);
+        mRecyclerView.addItemDecoration(divierDecoration);*/
+        mRecyclerView.addItemDecoration(new BaseItemDecoration() {
+            @Override
+            public ItemDecorationConfig getItemDecorationConfig(View view, RecyclerView rv) {
+                if (getItemViewType(view,rv)==0) return new ItemDecorationConfig().setBottom(20, Color.BLUE);
+                return null;
+            }
+        });
 //        recyclerView.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        adapter = new MultiTypeLoadMoreAdapter();
-        adapter.register(TextItem.class, new TextItemViewBinder());
-        mRecyclerView.setAdapter(adapter);
-        adapter.setLoadMoreItemRetryListener(new OnLoadMoreRetryListener() {
-            @Override
-            public void onRetry() {
-                isLoading = true;
-                handler.sendEmptyMessageDelayed(2, 3000);
-            }
-        });
-
-        adapter.setLoadMoreSubject(new LoadMoreDelegate.LoadMoreSubject() {
-            @Override
-            public boolean isLoading() {
-
-                return isLoading;
-            }
-
+        mRecyclerView.setLoadMoreFooterView(new LoadMoreFooterLayout(this));
+        mRecyclerView.setLoadMoreEnabled(true);
+        mRecyclerView.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                System.out.println(" onloacmore called ");
-                isLoading = true;
                 handler.sendEmptyMessageDelayed(2, 3000);
             }
         });
 
-        /* Mock the data */
-//        TextItem textItem = new TextItem("world");
-
-
-        adapter.setItems(createItems());
+        adapter = new TextAdapter();
+        mRecyclerView.setAdapter(adapter);
+        adapter.setData(createItems());
         adapter.notifyDataSetChanged();
 
     }
@@ -107,9 +93,9 @@ public class TestRefreshViewActivity extends Activity {
 
     boolean isLoading;
     int index = 1;
-    private List<?> createItems() {
+    private List<Object> createItems() {
         Items items = new Items();
-        for (int i = index; i < index + 20; i++) {
+        for (int i = index; i < index + 15; i++) {
             TextItem textItem = new TextItem("world no."+i);
             items.add(textItem);
         }
@@ -132,18 +118,12 @@ public class TestRefreshViewActivity extends Activity {
                     break;
 
                 case 2://加载完成
-                    boolean succeed = random.nextBoolean();
+                    adapter.addData(createItems());
+                    /*boolean succeed = random.nextBoolean();
                     if(succeed){
-                        adapter.appendItems(createItems());
+                        adapter.addData(createItems());
                     }else{
-                        adapter.setLoadMoreItemState(LoadMoreItem.STATE_FAILED);
-                    }
-
-                    if(index < 101){
-                        isLoading = false;
-                    }else{
-                        adapter.setLoadMoreItemState(LoadMoreItem.STATE_COMPLETED);
-                    }
+                    }*/
                     break;
             }
             return false;
