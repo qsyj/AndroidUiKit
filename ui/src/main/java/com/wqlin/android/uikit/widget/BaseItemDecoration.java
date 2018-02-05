@@ -98,7 +98,7 @@ public abstract class BaseItemDecoration extends RecyclerView.ItemDecoration {
         int left, right, top, bottom;
         left = bounds.left + translationX;
         right = bounds.right + translationX;
-        top = bounds.bottom + translationY;
+        top = bounds.top + translationY;
         bottom = top + config.getTopHeight();
 
         mDivider.setBounds(left, top, right, bottom);
@@ -150,7 +150,21 @@ public abstract class BaseItemDecoration extends RecyclerView.ItemDecoration {
 
     public int getItemViewType(View view, RecyclerView recyclerView) {
         RecyclerView.ViewHolder viewHolder = recyclerView.findContainingViewHolder(view);
+        if(viewHolder==null) return 0;
         return viewHolder.getItemViewType();
+    }
+
+    public int getItemViewType(int position, RecyclerView recyclerView) {
+        if (recyclerView==null) return 0;
+        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        if (adapter==null) return 0;
+        try {
+            if (position >= 0 && position < adapter.getItemCount())
+                return adapter.getItemViewType(position);
+        } catch (Exception ep) {
+            ep.printStackTrace();
+        }
+        return 0;
     }
 
     public abstract ItemDecorationConfig getItemDecorationConfig(View view, RecyclerView rv);
