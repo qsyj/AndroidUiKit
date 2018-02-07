@@ -57,6 +57,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 import java.util.Iterator;
 import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 import static android.support.v4.view.ViewPager.SCROLL_STATE_DRAGGING;
@@ -1072,7 +1073,8 @@ public class StrongTabLayout extends HorizontalScrollView{
 
         final int startScrollX = getScrollX();
         final int targetScrollX = calculateScrollXForTab(newPosition, 0);
-
+        // Now animate the indicator
+        mTabStrip.animateIndicatorToPosition(newPosition,startScrollX,targetScrollX ,ANIMATION_DURATION);
         if (startScrollX != targetScrollX) {
             if (newPosition != mTabStrip.mSelectedPosition) {
                 isAnimateToTab = true;
@@ -1099,8 +1101,8 @@ public class StrongTabLayout extends HorizontalScrollView{
             mScrollAnimator.setIntValues(startScrollX, targetScrollX);
             mScrollAnimator.start();
         }
-        // Now animate the indicator
-        mTabStrip.animateIndicatorToPosition(newPosition,startScrollX,targetScrollX ,ANIMATION_DURATION);
+
+
     }
 
     private void setSelectedTabView(int position) {
@@ -1990,26 +1992,25 @@ public class StrongTabLayout extends HorizontalScrollView{
                 return;
             }
 
-            int selectedLeft = selectedView.getLeft();
-            int selectedRight = selectedView.getRight();
-
-            final int startLeft,startRight,endLeft,endRight;
-            final int startWidth, endWidth;
-            final int startMid, targetMid,endMid;
+            final int startLeft,startRight,targetLeft,targetRight;
+            final int startMid, targetMid;
+            final int startWidth,targetWidth;
             final int ddX,ddWidth;
 
-            startLeft = selectedLeft;
-            startRight = selectedRight;
+            startLeft = selectedView.getLeft();
+            startRight = selectedView.getRight();
+            targetLeft = targetView.getLeft();
+            targetRight = targetView.getRight();
+
             startMid = (int) ((startLeft + startRight) * 1f / 2f);
             targetMid = (int) ((targetView.getRight() + targetView.getLeft()) * 1f / 2f);
-            endMid = targetMid - (targetScrollX - startScrollX);
-            ddX = endMid-startMid;
-            endLeft = (int) (endMid - (targetView.getWidth() * 1f / 2f));
-            endRight = endLeft + targetView.getWidth();
 
             startWidth = startRight - startLeft;
-            endWidth = endRight - endLeft;
-            ddWidth = endWidth - startWidth;
+            targetWidth = targetRight - targetLeft;
+
+            ddX = targetMid -startMid - (targetScrollX - startScrollX);
+            ddWidth = targetWidth - startWidth;
+
             ValueAnimator animator = ValueAnimator.ofFloat(0, 1).setDuration(duration);
             animator.setInterpolator(AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR);
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -2018,9 +2019,12 @@ public class StrongTabLayout extends HorizontalScrollView{
                     if (!mIsAnimIndicatorWhenClickTab && mIsTabClick) {
                         setIndicatorPosition(position);
                     } else {
-                        View view = getChildAt(position);
+                        int scrollX = startScrollX;
+                        StrongTabLayout strongTabLayout = getStrongTabLayout();
+                        if (strongTabLayout!=null)
+                            scrollX = strongTabLayout.getScrollX()-scrollX;
                         final float fraction = animator.getAnimatedFraction();
-                        int mid = (int) (((view.getLeft()+view.getRight())*1f/2f)-(1f-fraction)*ddX);
+                        int mid = (int) (startMid+scrollX+fraction*ddX);
                         float width =  (startWidth + fraction * ddWidth);
                         int left = (int) (mid - (width / 2f));
                         int right = (int) (left + width);
@@ -2032,8 +2036,7 @@ public class StrongTabLayout extends HorizontalScrollView{
             animator.addListener(new AnimatorListenerAdapter(){
                 @Override
                 public void onAnimationEnd(Animator animator) {
-                    if (!mIsAnimIndicatorWhenClickTab && mIsTabClick)
-                        setIndicatorPosition(position);
+                    setIndicatorPosition(position);
                     setTabClick(false);
                     mSelectedPosition = position;
                     mSelectionOffset = 0f;
@@ -2043,7 +2046,14 @@ public class StrongTabLayout extends HorizontalScrollView{
             animator.start();
         }
 
-
+        StrongTabLayout getStrongTabLayout() {
+            ViewParent parent = getParent();
+            if (parent != null && parent instanceof StrongTabLayout) {
+                StrongTabLayout strongTabLayout = (StrongTabLayout) parent;
+                return strongTabLayout;
+            }
+            return null;
+        }
         void animateIndicatorToPosition(final int position, int duration) {
             if (mIndicatorAnimator != null && mIndicatorAnimator.isRunning()) {
                 mIndicatorAnimator.cancel();

@@ -28,6 +28,7 @@ public class StrongTabLaoutActivity extends AppCompatActivity {
         mAdapter.setItems(getData());
         mViewPager.setAdapter(mAdapter);
         mTablayout.setupWithViewPager(mViewPager);
+        mTablayout.setAnimIndicatorWhenClickTab(true);
     }
 
     private List<String> getData() {
@@ -39,6 +40,13 @@ public class StrongTabLaoutActivity extends AppCompatActivity {
         list.add("发你赶快来");
         list.add("放开你");
         list.add("KNFLKF");
+        list.add("打开估计快了");
+        list.add("的个数");
+        list.add("发电量你看了");
+        list.add("开门打开");
+        list.add("wba");
+        list.add("lkddmm");
+        list.add("付款管理科");
         return list;
     }
 }
