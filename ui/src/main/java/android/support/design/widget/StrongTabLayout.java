@@ -28,12 +28,14 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.PointerIconCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.content.res.AppCompatResources;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -2007,16 +2009,12 @@ public class StrongTabLayout extends HorizontalScrollView{
 
             startWidth = startRight - startLeft;
             endWidth = endRight - endLeft;
-
             ddWidth = endWidth - startWidth;
-
-            ValueAnimatorCompat animator = mIndicatorAnimator = ViewUtils.createAnimator();
+            ValueAnimator animator = ValueAnimator.ofFloat(0, 1).setDuration(duration);
             animator.setInterpolator(AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR);
-            animator.setDuration(duration);
-            animator.setFloatValues(0, 1);
-            animator.addUpdateListener(new ValueAnimatorCompat.AnimatorUpdateListener(){
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
-                public void onAnimationUpdate(ValueAnimatorCompat animator) {
+                public void onAnimationUpdate(ValueAnimator animator) {
                     if (!mIsAnimIndicatorWhenClickTab && mIsTabClick) {
                         setIndicatorPosition(position);
                     } else {
@@ -2031,9 +2029,9 @@ public class StrongTabLayout extends HorizontalScrollView{
                 }
             });
 
-            animator.addListener(new ValueAnimatorCompat.AnimatorListenerAdapter() {
+            animator.addListener(new AnimatorListenerAdapter(){
                 @Override
-                public void onAnimationEnd(ValueAnimatorCompat animator) {
+                public void onAnimationEnd(Animator animator) {
                     if (!mIsAnimIndicatorWhenClickTab && mIsTabClick)
                         setIndicatorPosition(position);
                     setTabClick(false);
