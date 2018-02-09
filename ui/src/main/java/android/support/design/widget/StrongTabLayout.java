@@ -45,6 +45,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.animation.LinearInterpolator;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -71,7 +72,12 @@ import static android.support.v4.view.ViewPager.SCROLL_STATE_SETTLING;
  * <p>
  * 新增方法{@link SlidingTabStrip#animateIndicatorToPosition(int, int, int, int)} 优化animateToTab的动画效果
  *  <p>
- *  {@link #isAnimateToTab}-->优化animateToTab的动画效果, 当调用animateToTab()来更新指示器和HorizontalScrollView时,onPageSelected() onPageScrolled()不更新指示器和HorizontalScrollView,将在ViewPager静止时false或则动画结束为false
+ *  {@link #isAnimateToTab}-->优化animateToTab的动画效果, 当调用animateToTab()来更新指示器和HorizontalScrollView时,onPageSelected() onPageScrolled()不更新指示器和HorizontalScrollView,将在指示器则动画结束为false;
+ *  注意当{@link #isAnimateToTab} true点击滑动时ViewPager的Fragment加载数据来刷新页面,最好延迟{@link #getIndicatorAnimResidueTime()},不然会造成指示器卡的现象;
+ *  <p>
+ *  {@link #isAnimateToTab()}-->通过点击Tab切换页面 指示器是否正在动画移动;
+ *  <p>
+ *  {@link #getIndicatorAnimResidueTime()}-->通过点击Tab切换页面 指示器是正在动画移动 剩余动画时长;
  * @author wangql
  * @email wangql@leleyuntech.com
  * @date 2017/12/28 11:16
@@ -86,7 +92,7 @@ public class StrongTabLayout extends HorizontalScrollView{
     static final int FIXED_WRAP_GUTTER_MIN = 16; //dps
     static final int MOTION_NON_ADJACENT_OFFSET = 24;
 
-    private static final int ANIMATION_DURATION = 300;
+    public static final int ANIMATION_DURATION = 300;
 
     private static final Pools.Pool<Tab> sTabPool = new Pools.SynchronizedPool<>(16);
 
@@ -357,6 +363,18 @@ public class StrongTabLayout extends HorizontalScrollView{
 
     void setTabClick(boolean tabClick) {
         mIsTabClick = tabClick;
+    }
+
+    /**通过点击Tab切换页面 指示器是否正在动画移动*/
+    public boolean isAnimateToTab() {
+        return isAnimateToTab;
+    }
+
+    /**通过点击Tab切换页面 指示器是正在动画移动 剩余动画时长*/
+    public long getIndicatorAnimResidueTime() {
+        if (isAnimateToTab)
+            return mTabStrip.getIndicatorResidueTime();
+        return 0;
     }
 
     /**
@@ -1076,9 +1094,6 @@ public class StrongTabLayout extends HorizontalScrollView{
         // Now animate the indicator
         mTabStrip.animateIndicatorToPosition(newPosition,startScrollX,targetScrollX ,ANIMATION_DURATION);
         if (startScrollX != targetScrollX) {
-            if (newPosition != mTabStrip.mSelectedPosition) {
-                isAnimateToTab = true;
-            }
             if (mScrollAnimator == null) {
                 mScrollAnimator = ViewUtils.createAnimator();
                 mScrollAnimator.setInterpolator(AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR);
@@ -1086,8 +1101,7 @@ public class StrongTabLayout extends HorizontalScrollView{
                 mScrollAnimator.addListener(new ValueAnimatorCompat.AnimatorListenerAdapter(){
                     @Override
                     public void onAnimationEnd(ValueAnimatorCompat animator) {
-                        if (mPageChangeListener.mScrollState==SCROLL_STATE_IDLE)
-                            isAnimateToTab = false;
+
                     }
                 });
                 mScrollAnimator.addUpdateListener(new ValueAnimatorCompat.AnimatorUpdateListener() {
@@ -1820,7 +1834,7 @@ public class StrongTabLayout extends HorizontalScrollView{
         private int mIndicatorLeft = -1;
         private int mIndicatorRight = -1;
 
-        private ValueAnimatorCompat mIndicatorAnimator;
+        private ValueAnimator mIndicatorAnimator;
 
         SlidingTabStrip(Context context) {
             super(context);
@@ -1947,6 +1961,13 @@ public class StrongTabLayout extends HorizontalScrollView{
             }
         }
 
+        /**mIndicatorAnimator剩余动画时长*/
+        protected long getIndicatorResidueTime() {
+            if (mIndicatorAnimator != null)
+                return Math.round((1f - mIndicatorAnimator.getAnimatedFraction()) * mIndicatorAnimator.getDuration());
+            return 0;
+        }
+
         private void updateIndicatorPosition() {
             final View selectedTitle = getChildAt(mSelectedPosition);
             int left, right;
@@ -2034,7 +2055,7 @@ public class StrongTabLayout extends HorizontalScrollView{
             newStartMid = startMid;
             newStartWidth = startWidth;
 
-            ValueAnimator animator = ValueAnimator.ofFloat(0, 1).setDuration(duration);
+            ValueAnimator animator =mIndicatorAnimator= ValueAnimator.ofFloat(0, 1).setDuration(duration);
             animator.setInterpolator(AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR);
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
@@ -2047,10 +2068,12 @@ public class StrongTabLayout extends HorizontalScrollView{
                         if (strongTabLayout!=null)
                             scrollX = strongTabLayout.getScrollX()-scrollX;
                         final float fraction = animator.getAnimatedFraction();
-                        int mid = (int) (newStartMid+scrollX+fraction*newDdX);
+                        float fractionX = fraction * newDdX;
+                        int mid = (int) (newStartMid+scrollX+fractionX);
                         float width =  (newStartWidth + fraction * ddWidth);
                         int left = (int) (mid - (width / 2f));
                         int right = (int) (left + width);
+                        //Log.e("ValueAnimator", "newStartMid:"  +newStartMid +",scrollX:" +scrollX+",newDdX:" + newDdX + ",fraction:" + fraction + ",fractionX:" + fractionX+",mid:"+mid);
                         setIndicatorPosition(left,right);
                     }
                 }
@@ -2058,8 +2081,21 @@ public class StrongTabLayout extends HorizontalScrollView{
 
             animator.addListener(new AnimatorListenerAdapter(){
                 @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    isAnimateToTab = true;
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    super.onAnimationCancel(animation);
+                    isAnimateToTab = false;
+                }
+
+                @Override
                 public void onAnimationEnd(Animator animator) {
-                    setIndicatorPosition(position);
+                    isAnimateToTab = false;
+                    //setIndicatorPosition(position);
                     setTabClick(false);
                     mSelectedPosition = position;
                     mSelectionOffset = 0f;
@@ -2122,29 +2158,27 @@ public class StrongTabLayout extends HorizontalScrollView{
             }
 
             if (startLeft != targetLeft || startRight != targetRight) {
-                ValueAnimatorCompat animator = mIndicatorAnimator = ViewUtils.createAnimator();
+                ValueAnimator animator = mIndicatorAnimator = new ValueAnimator();
                 animator.setInterpolator(AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR);
                 animator.setDuration(duration);
                 animator.setFloatValues(0, 1);
-                animator.addUpdateListener(new ValueAnimatorCompat.AnimatorUpdateListener() {
+                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
-                    public void onAnimationUpdate(ValueAnimatorCompat animator) {
+                    public void onAnimationUpdate(ValueAnimator animation) {
                         if (!mIsAnimIndicatorWhenClickTab && mIsTabClick) {
                             setIndicatorPosition(position);
                         } else {
-                            final float fraction = animator.getAnimatedFraction();
+                            final float fraction = animation.getAnimatedFraction();
                             setIndicatorPosition(
                                     AnimationUtils.lerp(startLeft, targetLeft, fraction),
                                     AnimationUtils.lerp(startRight, targetRight, fraction));
                         }
-
                     }
                 });
-                animator.addListener(new ValueAnimatorCompat.AnimatorListenerAdapter() {
+                animator.addListener(new AnimatorListenerAdapter() {
                     @Override
-                    public void onAnimationEnd(ValueAnimatorCompat animator) {
-                        if (!mIsAnimIndicatorWhenClickTab && mIsTabClick)
-                            setIndicatorPosition(position);
+                    public void onAnimationEnd(Animator animator) {
+                        setIndicatorPosition(position);
                         setTabClick(false);
                         mSelectedPosition = position;
                         mSelectionOffset = 0f;
@@ -2254,10 +2288,6 @@ public class StrongTabLayout extends HorizontalScrollView{
         public void onPageScrollStateChanged(final int state) {
             mPreviousScrollState = mScrollState;
             mScrollState = state;
-            if (state == SCROLL_STATE_IDLE) {
-                final StrongTabLayout tabLayout = mStrongTabLayoutRef.get();
-                tabLayout.isAnimateToTab = false;
-            }
         }
 
         @Override
